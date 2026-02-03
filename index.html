@@ -1,0 +1,1520 @@
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baremo Policía Local Andalucía</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #e2e8f0;
+      font-family: system-ui, sans-serif;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(12px);
+    }
+
+    .fila-error {
+      background-color: rgba(127, 29, 29, 0.4);
+    }
+
+    /* ================================
+       IMPRESIÓN (modo PDF)
+       ================================ */
+    @media print {
+
+      button,
+      input,
+      select,
+      .eliminarDocencia,
+      .eliminarCurso,
+      .eliminarPublicacion,
+      .eliminarIdioma,
+      #addDocenciaBtn,
+      #addCursoBtn,
+      #addPublicacionBtn,
+      #addIdiomaBtn,
+      #btnImprimir,
+      #btnVistaPrevia {
+        display: none !important;
+      }
+
+      body {
+        background: white !important;
+        color: black !important;
+      }
+
+      .glass-card,
+      section,
+      table,
+      div {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+        border-color: #000 !important;
+      }
+
+      h1, h2, h3 {
+        color: black !important;
+      }
+
+      section {
+        page-break-inside: avoid;
+      }
+
+      /* Numeración de página */
+      body {
+        counter-reset: page;
+      }
+      .pageNumber::before {
+        counter-increment: page;
+        content: counter(page);
+      }
+    }
+
+    /* ================================
+       VISTA PREVIA (simula impresión)
+       ================================ */
+    .preview-print body,
+    .preview-print main,
+    .preview-print section {
+      background: white !important;
+      color: black !important;
+    }
+
+    .preview-print .glass-card {
+      background: white !important;
+      color: black !important;
+      border-color: #000 !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl md:text-2xl font-bold text-sky-300">
+        Baremo de méritos — Policía Local de Andalucía-CCOO FSC ANDALUCIA
+      </h1>
+      <span class="text-xs text-slate-400">Herramienta de cálculo no oficial (maximo 120 puntos) </span>
+    </div>
+  </header>
+
+  <main class="space-y-10 max-w-6xl mx-auto px-4 py-8">
+    <!-- TÍTULO PRINCIPAL CON IMAGEN -->
+<div class="flex items-center gap-4 mb-10">
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTear1oMFGKxXBZg189JbuJO2T3swdlyr7T-w&s" 
+  class="w-24 h-24 object-contain">
+   
+       
+
+  <h1 class="text-2xl md:text-3xl font-bold text-sky-300 leading-tight">
+    Auto Baremación del Decreto 8/2026 de 28 de Enero, que regula el ingreso, la promoción interna, la movilidad, 
+    la formación y la convocatoria unificada del personal funcionario de los cuerpos 
+    de la Policía Local de Andalucía
+  </h1>
+</div>
+
+
+    <!-- ==========================
+         PORTADA PARA IMPRESIÓN
+         ========================== -->
+    <section id="portadaBaremo" class="hidden print:block preview-print:block mb-10">
+      <h1 class="text-3xl font-bold mb-4">Baremo de méritos</h1>
+      <p class="mb-1"><span class="font-semibold">Nombre:</span> <span id="portadaNombre"></span></p>
+      <p class="mb-1"><span class="font-semibold">Cuerpo:</span> <span id="portadaCuerpo"></span></p>
+      <p class="mb-1"><span class="font-semibold">Escala / Categoría:</span> <span id="portadaEscala"></span></p>
+      <p class="mb-1"><span class="font-semibold">Fecha:</span> <span id="portadaFecha"></span></p>
+      <p class="mb-1">
+  <span class="font-semibold">Porcentaje sobre el concurso‑oposición:</span>
+  <span class="porcentajeMeritos">0%</span>
+</p>
+
+
+    </section>
+
+     <!-- APARTADO 1 — TITULACIONES -->
+    <section class="glass-card rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8">
+
+      <h2 class="text-2xl font-bold text-sky-300 mb-4">📘 1. Titulaciones académicas</h2>
+
+      <p class="text-slate-300 text-sm mb-4">
+        Se valorarán las siguientes titulaciones según el baremo oficial:
+        <br>1.1 Doctorado (nivel 4 MECES): <span class="text-emerald-300 font-semibold">14 puntos</span>.
+        <br>1.2 Máster Universitario (nivel 3 MECES): <span class="text-emerald-300 font-semibold">12 puntos</span>.
+        <br>1.3 Grado Universitario (nivel 2 MECES): <span class="text-emerald-300 font-semibold">10 puntos</span>.
+        <br>1.4 Técnico Superior (nivel 1 MECES): <span class="text-emerald-300 font-semibold">5 puntos</span>.
+        <br>Puntuación máxima del apartado:
+        <span class="font-semibold text-emerald-300">20 puntos</span>.
+      </p>
+
+      <form id="baremoForm1" class="space-y-3">
+
+        <div class="flex items-center gap-3">
+          <label class="flex-1 text-slate-200">Doctorado (nivel 4 MECES) — 14 puntos</label>
+          <input id="count-doctorado" type="number" min="0" value="0" class="w-20 p-1 rounded bg-slate-800 text-slate-100 text-center" />
+        </div>
+
+        <div class="flex items-center gap-3">
+          <label class="flex-1 text-slate-200">Máster Universitario (nivel 3 MECES) — 12 puntos</label>
+          <input id="count-master" type="number" min="0" value="0" class="w-20 p-1 rounded bg-slate-800 text-slate-100 text-center" />
+        </div>
+
+        <div class="flex items-center gap-3">
+          <label class="flex-1 text-slate-200">Grado Universitario (nivel 2 MECES) — 10 puntos</label>
+          <input id="count-grado" type="number" min="0" value="0" class="w-20 p-1 rounded bg-slate-800 text-slate-100 text-center" />
+        </div>
+
+        <div class="flex items-center gap-3">
+          <label class="flex-1 text-slate-200">Técnico Superior (nivel 1 MECES) — 5 puntos</label>
+          <input id="count-tecnico" type="number" min="0" value="0" class="w-20 p-1 rounded bg-slate-800 text-slate-100 text-center" />
+        </div>
+
+      </form>
+
+      <div class="mt-6 flex gap-4">
+        <button id="calcularBtn1"
+                class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-900 font-semibold shadow-lg">
+          ✅ Calcular puntuación
+        </button>
+
+        <button id="resetBtn1"
+                class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-400 text-slate-900 font-semibold shadow-lg">
+          🔄 Reset
+        </button>
+      </div>
+
+      <div class="mt-6 border border-slate-700 rounded-xl p-4 bg-slate-900/80">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span id="puntuacion1" class="text-4xl font-extrabold text-emerald-400">0</span>
+          <span class="text-slate-300 font-semibold">/ 20 puntos máx.</span>
+        </div>
+        <span id="mensaje1"
+              class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-200">
+          Aún no se ha calculado la puntuación.
+        </span>
+      </div>
+
+    </section>
+
+    <!-- APARTADO 2 — IDIOMAS -->
+    <section class="glass-card rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8">
+
+      <h2 class="text-2xl font-bold text-sky-300 mb-4">🗣️ 2. Conocimiento de idiomas</h2>
+
+      <p class="text-slate-300 text-sm mb-4">
+        Se valorarán únicamente lenguas oficiales de la Unión Europea, distintas del español,
+        según los niveles del MCER. Solo se valorará un certificado por idioma.
+        <br>2.1 Nivel C2: <span class="text-emerald-300 font-semibold">3 puntos</span>.
+        <br>2.2 Nivel C1: <span class="text-emerald-300 font-semibold">2,50 puntos</span>.
+        <br>2.3 Nivel B2: <span class="text-emerald-300 font-semibold">2 puntos</span>.
+        <br>2.4 Nivel B1: <span class="text-emerald-300 font-semibold">1,25 puntos</span>.
+        <br>2.5 Nivel A2: <span class="text-emerald-300 font-semibold">0,50 puntos</span>.
+        <br>2.6 Nivel A1: <span class="text-emerald-300 font-semibold">0,25 puntos</span>.
+        <br>Puntuación máxima del apartado:
+        <span class="font-semibold text-emerald-300">5 puntos</span>.
+      </p>
+
+      <button id="addIdiomaBtn"
+              class="mb-4 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-semibold shadow-lg">
+        ➕ Añadir idioma
+      </button>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-slate-200 border border-slate-700 rounded-lg overflow-hidden">
+          <thead class="bg-slate-800 text-slate-300">
+            <tr>
+              <th class="p-2 text-left">Idioma</th>
+              <th class="p-2 text-left">Nivel MCER</th>
+              <th class="p-2 text-left">Certificación</th>
+              <th class="p-2 text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaIdiomas" class="bg-slate-900"></tbody>
+        </table>
+      </div>
+
+      <div class="mt-6">
+        <button id="calcularBtn2"
+                class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-900 font-semibold shadow-lg">
+          ✅ Calcular puntuación
+        </button>
+      </div>
+
+      <div class="mt-6 border border-slate-700 rounded-xl p-4 bg-slate-900/80">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span id="puntuacion2" class="text-4xl font-extrabold text-emerald-400">0</span>
+          <span class="text-slate-300 font-semibold">/ 5 puntos máx.</span>
+        </div>
+        <span id="mensaje2"
+              class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-200">
+          Aún no se ha calculado la puntuación.
+        </span>
+      </div>
+
+    </section>
+
+    <!-- APARTADO 3 — SERVICIOS PRESTADOS -->
+    <section class="glass-card rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8">
+
+      <h2 class="text-2xl font-bold text-sky-300 mb-4">👮‍♂️ 3. Servicios prestados</h2>
+
+      <p class="text-slate-300 text-sm mb-4">
+        Se valorarán los años completos de servicio o fracciones superiores a seis meses,
+        según el baremo oficial:
+        <br>3.1 Policía Local de Andalucía (categoría igual, superior o inmediatamente anterior): 
+        <span class="text-emerald-300 font-semibold">1,25 puntos/año</span>.
+        <br>3.2 Policía Local de Andalucía (categorías inferiores en más de un grado): 
+        <span class="text-emerald-300 font-semibold">1 punto/año</span>.
+        <br>3.3 Otros Cuerpos y Fuerzas de Seguridad: 
+        <span class="text-emerald-300 font-semibold">0,25 puntos/año</span>.
+        <br>Puntuación máxima del apartado:
+        <span class="font-semibold text-emerald-300">40 puntos</span>.
+      </p>
+
+      <button id="addServicioBtn"
+              class="mb-4 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-semibold shadow-lg">
+        ➕ Añadir servicio
+      </button>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-slate-200 border border-slate-700 rounded-lg overflow-hidden">
+          <thead class="bg-slate-800 text-slate-300">
+            <tr>
+              <th class="p-2 text-left">Tipo</th>
+              <th class="p-2 text-left">Años</th>
+              <th class="p-2 text-left">Meses</th>
+              <th class="p-2 text-left">Días</th>
+              <th class="p-2 text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaServicios" class="bg-slate-900"></tbody>
+        </table>
+      </div>
+
+      <div class="mt-6">
+        <button id="calcularBtn3"
+                class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-900 font-semibold shadow-lg">
+          ✅ Calcular puntuación
+        </button>
+      </div>
+
+      <div class="mt-6 border border-slate-700 rounded-xl p-4 bg-slate-900/80">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span id="puntuacion3" class="text-4xl font-extrabold text-emerald-400">0</span>
+          <span class="text-slate-300 font-semibold">/ 40 puntos máx.</span>
+        </div>
+        <span id="mensaje3"
+              class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-200">
+          Aún no se ha calculado la puntuación.
+        </span>
+      </div>
+
+    </section>
+
+    <!-- APARTADO 4 — FORMACIÓN -->
+    <section class="glass-card rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8">
+
+      <h2 class="text-2xl font-bold text-sky-300 mb-4">🎓 4. Formación</h2>
+<div class="relative group inline-block">
+  <span class="text-sky-300 font-semibold cursor-pointer">ℹ️ Cómo se puntúa</span>
+
+  <div class="absolute hidden group-hover:block bg-slate-900 text-slate-200 p-4 rounded-lg w-80 border border-slate-700 z-50">
+    <p class="text-sm">
+      Tabla 4.1 (IESPA): 0,30 / 0,60 / 1 / 1,50 / 2 puntos según horas.<br>
+      Tabla 4.2 (Homologados): 0,15 / 0,30 / 0,50 / 0,75 / 1 punto.<br>
+      Presencial: +50%.<br>
+      Asistencia: 30%.<br>
+      Títulos propios: 1 punto por 25 ECTS.<br>
+      Jornadas / seminarios: 0,0025 puntos por hora.<br>
+      Máximo: 20 puntos.
+    </p>
+  </div>
+</div>
+
+    </div>
+</div>
+
+
+      <p class="text-slate-300 text-sm mb-4">
+        Se valorarán actividades formativas relacionadas con la materia policial según entidad,
+        duración, modalidad y tipo de certificación. La puntuación máxima es
+        <span class="font-semibold text-emerald-300">20 puntos</span>.
+      </p>
+
+      <button id="addCursoBtn"
+              class="mb-4 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-semibold shadow-lg">
+        ➕ Añadir formación
+      </button>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-slate-200 border border-slate-700 rounded-lg overflow-hidden">
+          <thead class="bg-slate-800 text-slate-300">
+            <tr>
+              <th class="p-2 text-left">Tipo</th>
+              <th class="p-2 text-left">Horas / ECTS</th>
+              <th class="p-2 text-left">Modalidad</th>
+              <th class="p-2 text-left">Asistencia</th>
+              <th class="p-2 text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaCursos" class="bg-slate-900"></tbody>
+        </table>
+      </div>
+
+      <div class="mt-6">
+        <button id="calcularBtn4"
+                class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-900 font-semibold shadow-lg">
+          ✅ Calcular puntuación
+        </button>
+      </div>
+
+      <div class="mt-6 border border-slate-700 rounded-xl p-4 bg-slate-900/80">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span id="puntuacion4" class="text-4xl font-extrabold text-emerald-400">0</span>
+          <span class="text-slate-300 font-semibold">/ 20 puntos máx.</span>
+        </div>
+        <span id="mensaje4"
+              class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-200">
+          Aún no se ha calculado la puntuación.
+        </span>
+      </div>
+
+    </section>
+
+    <!-- APARTADO 5 — DOCENCIA -->
+    <section class="glass-card rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8">
+
+      <h2 class="text-2xl font-bold text-sky-300">
+  5. Docencia
+</h2>
+
+<!-- Tooltip contextual -->
+<div class="relative group inline-block ml-2 align-middle">
+  <span class="text-sky-300 font-semibold cursor-pointer">ℹ️ Cómo se puntúa</span>
+
+  <div class="absolute hidden group-hover:block bg-slate-900 text-slate-200 p-4 rounded-lg w-80 border border-slate-700 z-50 shadow-xl">
+    <p class="text-sm leading-snug">
+      <strong>Docencia presencial:</strong><br>
+      • Cursos 4.1 → 0,05 puntos/hora<br>
+      • Cursos 4.2–4.5 → 0,02 puntos/hora<br>
+      • Jornadas 4.7 → 0,01 puntos/hora<br><br>
+
+      <strong>Docencia en red:</strong><br>
+      • Cursos 4.1 → 0,75 puntos por 100 alumnos<br>
+      • Cursos 4.2–4.5 → 0,30 puntos por 100 alumnos<br>
+      (Se calcula proporcionalmente al número real de alumnos)<br><br>
+
+      <strong>Reglas especiales:</strong><br>
+      • En red sin alumnos (Curso Antiguos) → se valora como presencial<br>
+      • Máximo apartado 5 → 15 puntos
+    </p>
+  </div>
+</div>
+
+
+      <p class="text-slate-300 text-sm mb-4">
+        Se valorará la impartición de docencia relacionada directamente con la materia policial, así como
+        la impartición de actividades formativas destinadas al personal de los cuerpos de la Policía Local
+        o de otros Cuerpos y Fuerzas de Seguridad.
+        <br>Puntuación máxima del apartado:
+        <span class="font-semibold text-emerald-300">15 puntos</span>.
+      </p>
+
+      <button id="addDocenciaBtn"
+              class="mb-4 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-semibold shadow-lg">
+        ➕ Añadir docencia
+      </button>
+
+      <div class="overflow-x-auto mb-4">
+        <table class="w-full text-sm text-slate-200 border border-slate-700 rounded-lg overflow-hidden">
+          <thead class="bg-slate-800 text-slate-300">
+            <tr>
+              <th class="p-2 text-left">Tipo</th>
+              <th class="p-2 text-left">Modalidad</th>
+              <th class="p-2 text-left">Horas</th>
+              <th class="p-2 text-left">Alumnos</th>
+              <th class="p-2 text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaDocencia" class="bg-slate-900"></tbody>
+        </table>
+      </div>
+
+      <div class="mt-2">
+        <button id="calcularBtn5"
+                class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-900 font-semibold shadow-lg">
+          ✅ Calcular puntuación
+        </button>
+      </div>
+
+      <div class="mt-6 border border-slate-700 rounded-xl p-4 bg-slate-900/80">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span id="puntuacion5" class="text-4xl font-extrabold text-emerald-400">0</span>
+          <span class="text-slate-300 font-semibold">/ 15 puntos máx.</span>
+        </div>
+        <span id="mensaje5"
+              class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-200">
+          Aún no se ha calculado la puntuación.
+        </span>
+
+        <div id="detalleDocencia" class="mt-4 text-xs text-slate-300 space-y-1">
+          <!-- Desglose por curso se rellena por JS -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- APARTADO 6 — PUBLICACIONES -->
+    <section class="glass-card rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8">
+
+      <h2 class="text-2xl font-bold text-sky-300 mb-4">📚 6. Publicaciones</h2>
+<div class="relative group inline-block ml-2 align-middle">
+  <span class="text-sky-300 font-semibold cursor-pointer">ℹ️ Cómo se puntúa</span>
+
+  <div class="absolute hidden group-hover:block bg-slate-900 text-slate-200 p-4 rounded-lg w-80 border border-slate-700 z-50 shadow-xl">
+    <p class="text-sm leading-snug">
+      <strong>Publicaciones relacionadas con materia policial:</strong><br>
+      • Libro completo → 3 punto<br>
+      • Capítulo de libro → 0,5 puntos<br>
+      • Artículo en revista científica → 0,5 puntos<br>
+      • Artículo en revista profesional → 0,25 puntos<br><br>
+
+      <strong>Requisitos:</strong><br>
+      • Deben estar relacionadas con la materia policial<br>
+      • Deben ser publicadas (no valen borradores o inéditos)<br><br>
+
+      <strong>Puntuación máxima del apartado 6:</strong> 10 puntos
+    </p>
+  </div>
+</div>
+
+      <p class="text-slate-300 text-sm mb-4">
+        Se valorarán publicaciones relacionadas con la materia policial:
+        libros con ISBN y artículos con ISSN.
+        <br>Puntuación máxima del apartado:
+        <span class="font-semibold text-emerald-300">10 puntos</span>.
+      </p>
+
+      <button id="addPublicacionBtn"
+              class="mb-4 px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-semibold shadow-lg">
+        ➕ Añadir publicación
+      </button>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-slate-200 border border-slate-700 rounded-lg overflow-hidden">
+          <thead class="bg-slate-800 text-slate-300">
+            <tr>
+              <th class="p-2 text-left">Tipo</th>
+              <th class="p-2 text-left">Título</th>
+              <th class="p-2 text-left">ISBN / ISSN</th>
+              <th class="p-2 text-left">Autores</th>
+              <th class="p-2 text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPublicaciones" class="bg-slate-900"></tbody>
+        </table>
+      </div>
+
+      <div class="mt-6">
+        <button id="calcularBtn6"
+                class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-900 font-semibold shadow-lg">
+          ✅ Calcular puntuación
+        </button>
+      </div>
+
+      <div class="mt-6 border border-slate-700 rounded-xl p-4 bg-slate-900/80">
+        <div class="flex items-baseline gap-2 mb-3">
+          <span id="puntuacion6" class="text-4xl font-extrabold text-emerald-400">0</span>
+          <span class="text-slate-300 font-semibold">/ 10 puntos máx.</span>
+        </div>
+        <span id="mensaje6"
+              class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-200">
+          Aún no se ha calculado la puntuación.
+        </span>
+      </div>
+
+    </section>
+
+    <!-- APARTADO 7 — CONDECORACIONES -->
+    <section class="glass-card rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8">
+
+  <h2 class="text-2xl font-bold text-sky-300 mb-4">🏅 7. Condecoraciones y felicitaciones</h2>
+
+  <p class="text-slate-300 text-sm mb-4">
+    Se valorarán condecoraciones y felicitaciones según el baremo oficial.
+    <br>Puntuación máxima del apartado:
+    <span class="font-semibold text-emerald-300">10 puntos</span>.
+  </p>
+
+  <form id="baremoForm7" class="space-y-3">
+
+    <div class="flex items-center gap-3">
+      <label class="flex-1 text-slate-200">Medalla de Oro (Orden al Mérito PL Andalucía) — 6 puntos</label>
+      <input type="number" min="0" class="inputA7 w-24 p-1 rounded bg-slate-800 text-slate-100 text-center"
+             data-puntos="6">
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="flex-1 text-slate-200">Medalla de Plata — 4 puntos</label>
+      <input type="number" min="0" class="inputA7 w-24 p-1 rounded bg-slate-800 text-slate-100 text-center"
+             data-puntos="4">
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="flex-1 text-slate-200">Cruz distintivo verde — 2 puntos</label>
+      <input type="number" min="0" class="inputA7 w-24 p-1 rounded bg-slate-800 text-slate-100 text-center"
+             data-puntos="2">
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="flex-1 text-slate-200">Cruz distintivo blanco — 1,5 puntos</label>
+      <input type="number" min="0" class="inputA7 w-24 p-1 rounded bg-slate-800 text-slate-100 text-center"
+             data-puntos="1.5">
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="flex-1 text-slate-200">Medalla al Mérito del Municipio — 1,5 puntos</label>
+      <input type="number" min="0" class="inputA7 w-24 p-1 rounded bg-slate-800 text-slate-100 text-center"
+             data-puntos="1.5">
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="flex-1 text-slate-200">Medalla/Cruz distintivo rojo (otros cuerpos) — 1,5 puntos</label>
+      <input type="number" min="0" class="inputA7 w-24 p-1 rounded bg-slate-800 text-slate-100 text-center"
+             data-puntos="1.5">
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="flex-1 text-slate-200">Medalla/Cruz distintivo blanco (otros cuerpos) — 1 punto</label>
+      <input type="number" min="0" class="inputA7 w-24 p-1 rounded bg-slate-800 text-slate-100 text-center"
+             data-puntos="1">
+    </div>
+
+    <div class="flex items-center gap-3">
+      <label class="flex-1 text-slate-200">Felicitación pública individual del Pleno — 0,25 puntos (máx. 1 punto)</label>
+      <div class="relative group inline-block ml-2 align-middle">
+  <span class="text-sky-300 font-semibold cursor-pointer">ℹ️ Nota </span>
+
+  <div class="absolute hidden group-hover:block bg-slate-900 text-slate-200 p-3 rounded-lg w-64 border border-slate-700 z-50 shadow-xl">
+    <p class="text-sm leading-snug">
+      Esta puntuación solo se aplica en procesos de <strong>promoción interna</strong>.
+    </p>
+  </div>
+</div>
+
+      <input type="number" min="0" class="inputA7 w-24 p-1 rounded bg-slate-800 text-slate-100 text-center"
+             data-puntos="0.25" data-max="1">
+    </div>
+
+  </form>
+
+  <div class="mt-6 flex gap-4">
+    <button id="calcularBtn7"
+            class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-900 font-semibold shadow-lg">
+      ✅ Calcular puntuación
+    </button>
+
+    <button id="resetBtn7"
+            class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-400 text-slate-900 font-semibold shadow-lg">
+      🔄 Reset
+    </button>
+  </div>
+
+  <div class="mt-6 border border-slate-700 rounded-xl p-4 bg-slate-900/80">
+    <div class="flex items-baseline gap-2 mb-3">
+      <span id="puntuacion7" class="text-4xl font-extrabold text-emerald-400">0</span>
+      <span class="text-slate-300 font-semibold">/ 10 puntos máx.</span>
+    </div>
+
+    <span id="mensaje7"
+          class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-200">
+      Aún no se ha calculado la puntuación.
+    </span>
+  </div>
+
+</section>
+
+  <!-- ==========================
+     RESUMEN GLOBAL DETALLADO
+     ========================== -->
+<section class="glass-card rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8">
+
+  <h2 class="text-3xl font-bold text-yellow-300 mb-6 text-center">
+    🏆 Resumen global de méritos
+  </h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <div class="glass-card border border-slate-700 rounded-xl p-4 text-center">
+      <h3 class="text-lg font-semibold text-sky-300 mb-2">📘 A1 — Titulaciones</h3>
+      <span id="resumen1" class="text-3xl font-extrabold text-emerald-400">0</span>
+      <p class="text-slate-400 text-sm">/ 20</p>
+    </div>
+
+    <div class="glass-card border border-slate-700 rounded-xl p-4 text-center">
+      <h3 class="text-lg font-semibold text-sky-300 mb-2">🗣️ A2 — Idiomas</h3>
+      <span id="resumen2" class="text-3xl font-extrabold text-emerald-400">0</span>
+      <p class="text-slate-400 text-sm">/ 5</p>
+    </div>
+
+    <div class="glass-card border border-slate-700 rounded-xl p-4 text-center">
+      <h3 class="text-lg font-semibold text-sky-300 mb-2">👮‍♂️ A3 — Servicios</h3>
+      <span id="resumen3" class="text-3xl font-extrabold text-emerald-400">0</span>
+      <p class="text-slate-400 text-sm">/ 40</p>
+    </div>
+
+    <div class="glass-card border border-slate-700 rounded-xl p-4 text-center">
+      <h3 class="text-lg font-semibold text-sky-300 mb-2">🎓 A4 — Formación</h3>
+      <span id="resumen4" class="text-3xl font-extrabold text-emerald-400">0</span>
+      <p class="text-slate-400 text-sm">/ 20</p>
+    </div>
+
+    <div class="glass-card border border-slate-700 rounded-xl p-4 text-center">
+      <h3 class="text-lg font-semibold text-sky-300 mb-2">👩‍🏫 A5 — Docencia</h3>
+      <span id="resumen5" class="text-3xl font-extrabold text-emerald-400">0</span>
+      <p class="text-slate-400 text-sm">/ 15</p>
+    </div>
+
+    <div class="glass-card border border-slate-700 rounded-xl p-4 text-center">
+      <h3 class="text-lg font-semibold text-sky-300 mb-2">📚 A6 — Publicaciones</h3>
+      <span id="resumen6" class="text-3xl font-extrabold text-emerald-400">0</span>
+      <p class="text-slate-400 text-sm">/ 10</p>
+    </div>
+
+  </div>
+
+  <div class="glass-card border border-slate-700 rounded-xl p-4 text-center mt-6">
+    <h3 class="text-lg font-semibold text-sky-300 mb-2">🏅 A7 — Condecoraciones</h3>
+    <span id="resumen7" class="text-3xl font-extrabold text-emerald-400">0</span>
+    <p class="text-slate-400 text-sm">/ 10</p>
+  </div>
+
+  <div class="mt-10 text-center glass-card border border-yellow-400 rounded-2xl p-6">
+    <h3 class="text-lg font-semibold text-yellow-300 mb-2">🏅 TOTAL</h3>
+    <span id="resumenTotal" class="text-4xl font-extrabold text-yellow-300">0</span>
+    <p class="text-slate-400 text-sm">/ 120</p>
+  </div>
+  <p class="text-slate-300 mt-2">
+  <strong>Porcentaje sobre el total del concurso‑oposición:</strong>
+  <span class="porcentajeMeritos">0%</span>
+</p>
+
+
+</section>
+
+
+    <!-- ==========================
+         RESUMEN FINAL FIRMADO
+         ========================== -->
+    <section id="resumenFirmado" class="hidden print:block preview-print:block mt-10">
+      <h2 class="text-2xl font-bold mb-4">Resumen final de baremación</h2>
+      <p class="mb-2">
+        Puntuación total obtenida:
+        <span id="resumenTotalFirmado" class="font-semibold"></span> puntos sobre 120.
+      </p>
+      <p class="mb-8">
+        A los efectos oportunos, se firma la presente baremación.
+      </p>
+      <p class="mb-1">En ______________________, a ____ de __________ de ________.</p>
+      <p class="mt-10">Firma:</p>
+      <p>__________________________________________</p>
+    </section>
+
+    <!-- ==========================
+         BOTONES IMPRESIÓN / PREVIA
+         ========================== -->
+    <section class="mt-10 text-center">
+      <button id="btnVistaPrevia"
+              class="px-6 py-3 rounded-lg bg-slate-500 hover:bg-slate-400 text-slate-50 font-bold shadow-lg mr-3">
+        👁️ Vista previa de impresión
+      </button>
+      <button id="btnImprimir"
+              class="px-6 py-3 rounded-lg bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-bold shadow-lg">
+        🖨️ Imprimir / Guardar como PDF
+      </button>
+    </section>
+
+  </main>
+
+  <!-- PIE DE PÁGINA SOLO PARA IMPRESIÓN / PREVIA -->
+  <footer id="pieImpresion"
+          class="hidden print:block preview-print:block fixed bottom-2 left-0 right-0 text-center text-xs text-slate-500">
+    Página <span class="pageNumber"></span>
+  </footer>
+  <div class="mt-6 text-slate-400 text-sm">
+  <strong>Porcentaje total obtenido:</strong>
+  <span class="porcentajeMeritos">0%</span>
+  <br>
+  <em>(La puntuación máxima de méritos es 120 puntos, equivalente al 45% del total del concurso‑oposición)</em>
+</div>
+
+ <script>
+  // ======================================================
+  // APARTADO 1 — TITULACIONES (máx. 20)
+  // ======================================================
+
+  const calcularBtn1 = document.getElementById("calcularBtn1");
+  const resetBtn1 = document.getElementById("resetBtn1");
+  const puntuacion1El = document.getElementById("puntuacion1");
+  const mensaje1El = document.getElementById("mensaje1");
+
+  const countDoctorado = document.getElementById("count-doctorado");
+  const countMaster = document.getElementById("count-master");
+  const countGrado = document.getElementById("count-grado");
+  const countTecnico = document.getElementById("count-tecnico");
+
+  const PTS = {
+    doctorado: 14,
+    master: 12,
+    grado: 10,
+    tecnico: 5
+  };
+
+  calcularBtn1.onclick = () => {
+    const nDoctorado = Math.max(0, Number(countDoctorado.value) || 0);
+    const nMaster = Math.max(0, Number(countMaster.value) || 0);
+    const nGrado = Math.max(0, Number(countGrado.value) || 0);
+    const nTecnico = Math.max(0, Number(countTecnico.value) || 0);
+
+    let total = nDoctorado * PTS.doctorado
+              + nMaster * PTS.master
+              + nGrado * PTS.grado
+              + nTecnico * PTS.tecnico;
+
+    const original = total;
+    if (total > 20) total = 20;
+
+    puntuacion1El.textContent = total;
+    mensaje1El.textContent =
+      total === 0 ? "Sin puntuación."
+      : original > 20 ? "Se aplica el máximo de 20 puntos."
+      : "Puntuación válida.";
+
+    if (typeof actualizarResumenGlobal === "function") actualizarPorcentajeMeritos();
+
+  };
+
+  resetBtn1.onclick = () => {
+    countDoctorado.value = 0;
+    countMaster.value = 0;
+    countGrado.value = 0;
+    countTecnico.value = 0;
+
+    puntuacion1El.textContent = "0";
+    mensaje1El.textContent = "Aún no se ha calculado la puntuación.";
+
+    if (typeof actualizarResumenGlobal === "function") actualizarPorcentajeMeritos();
+
+  };
+
+  // ======================================================
+  // APARTADO 2 — IDIOMAS (máx. 5)
+  // ======================================================
+
+  const tablaIdiomas = document.getElementById("tablaIdiomas");
+  const addIdiomaBtn = document.getElementById("addIdiomaBtn");
+
+  addIdiomaBtn.onclick = () => {
+    const row = document.createElement("tr");
+    row.className = "border-t border-slate-700";
+
+    row.innerHTML = `
+      <td class="p-2">
+        <input type="text" class="idioma w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200" placeholder="Idioma">
+      </td>
+
+      <td class="p-2">
+        <select class="nivelIdioma w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200">
+          <option value="">Nivel</option>
+          <option value="3">C2 — 3 puntos</option>
+          <option value="2.5">C1 — 2,5 puntos</option>
+          <option value="2">B2 — 2 puntos</option>
+          <option value="1.25">B1 — 1,25 puntos</option>
+          <option value="0.5">A2 — 0,5 puntos</option>
+          <option value="0.25">A1 — 0,25 puntos</option>
+        </select>
+      </td>
+
+      <td class="p-2">
+        <input type="text" class="certIdioma w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200" placeholder="Certificación">
+      </td>
+
+      <td class="p-2 text-center">
+        <button class="eliminarIdioma text-red-400 hover:text-red-300 font-bold">❌</button>
+      </td>
+    `;
+
+    row.querySelector(".eliminarIdioma").onclick = () => row.remove();
+    tablaIdiomas.appendChild(row);
+  };
+
+  const calcularBtn2 = document.getElementById("calcularBtn2");
+  const puntuacion2El = document.getElementById("puntuacion2");
+  const mensaje2El = document.getElementById("mensaje2");
+
+  calcularBtn2.onclick = () => {
+    let total = 0;
+    const idiomasProcesados = new Set();
+
+    tablaIdiomas.querySelectorAll("tr").forEach(row => {
+      const idioma = row.querySelector(".idioma").value.trim().toLowerCase();
+      const nivel = Number(row.querySelector(".nivelIdioma").value) || 0;
+
+      if (!idioma || idiomasProcesados.has(idioma)) return;
+
+      idiomasProcesados.add(idioma);
+      total += nivel;
+    });
+
+    const original = total;
+    if (total > 5) total = 5;
+
+    puntuacion2El.textContent = total.toFixed(2).replace('.', ',');
+    mensaje2El.textContent =
+      total === 0 ? "Sin puntuación."
+      : original > 5 ? "Se aplica el máximo de 5 puntos."
+      : "Puntuación válida.";
+
+    actualizarResumenGlobal();
+    actualizarPorcentajeMeritos();
+
+  };
+
+  // ======================================================
+  // APARTADO 3 — SERVICIOS PRESTADOS (máx. 40)
+  // ======================================================
+
+  const tablaServicios = document.getElementById("tablaServicios");
+  const addServicioBtn = document.getElementById("addServicioBtn");
+
+  addServicioBtn.onclick = () => {
+    const row = document.createElement("tr");
+    row.className = "border-t border-slate-700";
+
+    row.innerHTML = `
+      <td class="p-2">
+        <select class="tipoServicio w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200">
+          <option value="">Seleccionar</option>
+          <option value="1.25">3.1 — PL Andalucía (cat. igual/superior/inmed. anterior)</option>
+          <option value="1">3.2 — PL Andalucía (cat. inferior en >1 grado)</option>
+          <option value="0.25">3.3 — Otros Cuerpos y FFCCS</option>
+        </select>
+      </td>
+
+      <td class="p-2"><input type="number" min="0" class="anosServicio w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200"></td>
+      <td class="p-2"><input type="number" min="0" class="mesesServicio w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200"></td>
+      <td class="p-2"><input type="number" min="0" class="diasServicio w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200"></td>
+
+      <td class="p-2 text-center">
+        <button class="eliminarServicio text-red-400 hover:text-red-300 font-bold">❌</button>
+      </td>
+    `;
+
+    row.querySelector(".eliminarServicio").onclick = () => row.remove();
+    tablaServicios.appendChild(row);
+  };
+
+  const calcularBtn3 = document.getElementById("calcularBtn3");
+  const puntuacion3El = document.getElementById("puntuacion3");
+  const mensaje3El = document.getElementById("mensaje3");
+
+  calcularBtn3.onclick = () => {
+    let total = 0;
+
+    tablaServicios.querySelectorAll("tr").forEach(row => {
+      const tipo = Number(row.querySelector(".tipoServicio").value) || 0;
+      const anos = Number(row.querySelector(".anosServicio").value) || 0;
+      const meses = Number(row.querySelector(".mesesServicio").value) || 0;
+      const dias = Number(row.querySelector(".diasServicio").value) || 0;
+
+      const totalMeses = anos * 12 + meses + dias / 30;
+      let anosBaremables = Math.floor(totalMeses / 12);
+      const restoMeses = totalMeses % 12;
+      if (restoMeses > 6) anosBaremables += 1;
+
+      const puntos = anosBaremables * tipo;
+      total += puntos;
+    });
+
+    const original = total;
+    if (total > 40) total = 40;
+
+    puntuacion3El.textContent = total.toFixed(2).replace('.', ',');
+    mensaje3El.textContent =
+      total === 0 ? "Sin puntuación."
+      : original > 40 ? "Se aplica el máximo de 40 puntos."
+      : "Puntuación válida.";
+
+    actualizarResumenGlobal();
+    actualizarPorcentajeMeritos();
+
+  }
+
+  // ======================================================
+  // APARTADO 4 — FORMACIÓN (máx. 20)
+  // ======================================================
+
+  const tablaCursos = document.getElementById("tablaCursos");
+  const addCursoBtn = document.getElementById("addCursoBtn");
+
+  addCursoBtn.onclick = () => {
+    const row = document.createElement("tr");
+    row.className = "border-t border-slate-700";
+
+    row.innerHTML = `
+      <td class="p-2">
+        <select class="tipoCurso w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200">
+          <option value="">Tipo</option>
+          <option value="4.1">4.1 — IESPA / delegados / homologados</option>
+          <option value="4.2">4.2 — Homologados por IESPA, CCOO</option>
+          <option value="4.3">4.3 — Otros centros policiales / AGE / CCAA / EELL</option>
+          <option value="4.4">4.4 — Escuelas acreditadas (no homologados)</option>
+          <option value="4.5">4.5 — Título propio universitario (ECTS)</option>
+          <option value="4.6">4.6 — FP Técnico en Seguridad</option>
+          <option value="4.7">4.7 — Jornadas / seminarios</option>
+        </select>
+      </td>
+
+      <td class="p-2">
+        <input
+          type="number"
+          min="0"
+          class="horasCurso w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200"
+          placeholder="Horas / ECTS"
+        >
+      </td>
+
+      <td class="p-2">
+        <select class="modalidadCurso w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200">
+          <option value="red">En red</option>
+          <option value="presencial">Presencial</option>
+          <option value="semipresencial">Semipresencial</option>
+        </select>
+      </td>
+
+      <td class="p-2 text-center">
+        <input type="checkbox" class="asistenciaCurso w-5 h-5 text-sky-400 bg-slate-800 border-slate-600 rounded">
+      </td>
+
+      <td class="p-2 text-center">
+        <button class="eliminarCurso text-red-400 hover:text-red-300 font-bold">❌</button>
+      </td>
+    `;
+
+    row.querySelector(".eliminarCurso").onclick = () => row.remove();
+    tablaCursos.appendChild(row);
+  };
+
+  const calcularBtn4 = document.getElementById("calcularBtn4");
+  const puntuacion4El = document.getElementById("puntuacion4");
+  const mensaje4El = document.getElementById("mensaje4");
+
+  calcularBtn4.onclick = () => {
+    let total = 0;
+
+    tablaCursos.querySelectorAll("tr").forEach(row => {
+      const tipo = row.querySelector(".tipoCurso").value;
+      const valor = Number(row.querySelector(".horasCurso").value) || 0;
+      const modalidad = row.querySelector(".modalidadCurso").value;
+      const asistencia = row.querySelector(".asistenciaCurso").checked;
+
+      if (!tipo || valor <= 0) return;
+
+      let puntos = 0;
+      let horas = valor;
+      let ects = 0;
+
+      if (tipo === "4.5") {
+        ects = valor;
+        horas = 0;
+      }
+
+      function tabla41(h) {
+        if (h >= 20 && h <= 35) return 0.30;
+        if (h >= 36 && h <= 75) return 0.60;
+        if (h >= 76 && h <= 100) return 1.00;
+        if (h >= 101 && h <= 200) return 1.50;
+        if (h > 200) return 2.00;
+        return 0;
+      }
+
+      function tabla42(h) {
+        if (h >= 20 && h <= 35) return 0.15;
+        if (h >= 36 && h <= 75) return 0.30;
+        if (h >= 76 && h <= 100) return 0.50;
+        if (h >= 101 && h <= 200) return 0.75;
+        if (h > 200) return 1.00;
+        return 0;
+      }
+
+      if (tipo === "4.1") puntos = tabla41(horas);
+      if (tipo === "4.2" || tipo === "4.3" || tipo === "4.4") puntos = tabla42(horas);
+
+      if (tipo === "4.5") puntos = ects / 25;
+      if (tipo === "4.6") puntos = 3;
+      if (tipo === "4.7") puntos = horas * 0.0025;
+
+      const aplicaModAsist = !(tipo === "4.5" || tipo === "4.6" || tipo === "4.7");
+
+      if (aplicaModAsist) {
+        if (modalidad === "presencial") puntos *= 1.5;
+        if (modalidad === "semipresencial") {
+          // se valora como red
+        }
+        if (asistencia) puntos *= 0.30;
+      }
+
+      total += puntos;
+    });
+
+    const original = total;
+    if (total > 20) total = 20;
+
+    puntuacion4El.textContent = total.toLocaleString("es-ES", { maximumFractionDigits: 10 });
+    mensaje4El.textContent =
+      total === 0 ? "Sin puntuación."
+      : original > 20 ? "Se aplica el máximo de 20 puntos."
+      : "Puntuación válida.";
+
+    actualizarResumenGlobal();
+    actualizarPorcentajeMeritos();
+
+  };
+
+  // ======================================================
+// APARTADO 5 — DOCENCIA (CORREGIDO + REFERENCIA A CURSOS ANTIGUOS)
+// ======================================================
+
+const tablaDocencia = document.getElementById("tablaDocencia");
+const addDocenciaBtn = document.getElementById("addDocenciaBtn");
+const calcularBtn5 = document.getElementById("calcularBtn5");
+const puntuacion5El = document.getElementById("puntuacion5");
+const mensaje5El = document.getElementById("mensaje5");
+
+addDocenciaBtn.onclick = () => {
+  const row = document.createElement("tr");
+  row.className = "border-t border-slate-700";
+
+  row.innerHTML = `
+    <td class="p-2">
+      <select class="tipoDocencia w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200">
+        <option value="">Tipo</option>
+        <option value="4.1">4.1 — IESPA / delegados / homologados</option>
+        <option value="4.2">4.2 — Homologados por IESPA,CCOO</option>
+        <option value="4.3">4.3 — Otros centros policiales / AGE / CCAA / EELL</option>
+        <option value="4.4">4.4 — Escuelas acreditadas (no homologados)</option>
+        <option value="4.5">4.5 — Título propio universitario</option>
+        <option value="4.7">4.7 — Jornadas / seminarios</option>
+      </select>
+    </td>
+
+    <td class="p-2">
+      <select class="modalidadDocencia w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200">
+        <option value="presencial">Presencial</option>
+        <option value="red">En red</option>
+      </select>
+    </td>
+
+    <td class="p-2">
+      <input type="number" min="0" class="horasDocencia w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200">
+    </td>
+
+    <td class="p-2">
+      <input type="number" min="0" class="alumnosDocencia w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200">
+    </td>
+
+    <td class="p-2 text-center">
+      <button class="eliminarDocencia text-red-400 hover:text-red-300 font-bold">❌</button>
+    </td>
+  `;
+
+  row.querySelector(".eliminarDocencia").onclick = () => row.remove();
+  tablaDocencia.appendChild(row);
+};
+
+calcularBtn5.onclick = () => {
+  let total = 0;
+  let avisoAntiguos = false;
+
+  tablaDocencia.querySelectorAll("tr").forEach(row => {
+    const tipo = row.querySelector(".tipoDocencia").value;
+    const modalidad = row.querySelector(".modalidadDocencia").value;
+    const horas = Number(row.querySelector(".horasDocencia").value) || 0;
+    const alumnos = Number(row.querySelector(".alumnosDocencia").value) || 0;
+
+    let puntos = 0;
+
+    // --- 5.1 PRESENCIAL ---
+    function puntosPresencial() {
+      if (tipo === "4.1") return horas * 0.05;
+      if (["4.2", "4.3", "4.4", "4.5"].includes(tipo)) return horas * 0.02;
+      if (tipo === "4.7") return horas * 0.01;
+      return 0;
+    }
+
+    // --- 5.2 RED ---
+    function puntosRed() {
+      // Cursos antiguos → sin alumnos → aplicar presencial
+      if (alumnos === 0) {
+        avisoAntiguos = true;
+        return puntosPresencial();
+      }
+
+      if (tipo === "4.1") return (alumnos / 100) * 0.75;
+      if (["4.2", "4.3", "4.4", "4.5"].includes(tipo)) return (alumnos / 100) * 0.30;
+
+      // 4.7 NO tiene docencia en red
+      return 0;
+    }
+
+    if (modalidad === "presencial") puntos = puntosPresencial();
+    else puntos = puntosRed();
+
+    total += puntos;
+  });
+
+  const original = total;
+  if (total > 15) total = 15;
+
+  puntuacion5El.textContent = total.toFixed(2).replace('.', ',');
+
+  if (avisoAntiguos) {
+    mensaje5El.textContent = "Incluye docencia en red antigua valorada como presencial (según Decreto).";
+  } else {
+    mensaje5El.textContent =
+      total === 0 ? "Sin puntuación."
+      : original > 15 ? "Se aplica el máximo de 15 puntos."
+      : "Puntuación válida.";
+  }
+
+  
+  actualizarPorcentajeMeritos();
+
+};
+
+
+  // ======================================================
+  // APARTADO 6 — PUBLICACIONES (máx. 10)
+  // ======================================================
+
+  const tablaPublicaciones = document.getElementById("tablaPublicaciones");
+  const addPublicacionBtn = document.getElementById("addPublicacionBtn");
+
+  addPublicacionBtn.onclick = () => {
+    const row = document.createElement("tr");
+    row.className = "border-t border-slate-700";
+
+    row.innerHTML = `
+      <td class="p-2">
+        <select class="tipoPublicacion w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200">
+          <option value="">Seleccionar</option>
+          <option value="libro">Libro (ISBN)</option>
+          <option value="articulo">Artículo (ISSN)</option>
+        </select>
+      </td>
+
+      <td class="p-2">
+        <input type="text" class="tituloPublicacion w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200" placeholder="Título">
+      </td>
+
+      <td class="p-2">
+        <input type="text" class="codigoPublicacion w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200" placeholder="ISBN / ISSN">
+      </td>
+
+      <td class="p-2">
+        <input type="number" min="1" class="autoresPublicacion w-full px-2 py-1 rounded bg-slate-800 border border-slate-600 text-slate-200" placeholder="Autores">
+      </td>
+
+      <td class="p-2 text-center">
+        <button class="eliminarPublicacion text-red-400 hover:text-red-300 font-bold">❌</button>
+      </td>
+    `;
+
+    row.querySelector(".eliminarPublicacion").onclick = () => row.remove();
+    tablaPublicaciones.appendChild(row);
+  };
+
+  const calcularBtn6 = document.getElementById("calcularBtn6");
+  const puntuacion6El = document.getElementById("puntuacion6");
+  const mensaje6El = document.getElementById("mensaje6");
+
+  calcularBtn6.onclick = () => {
+    let total = 0;
+
+    tablaPublicaciones.querySelectorAll("tr").forEach(row => {
+      const tipo = row.querySelector(".tipoPublicacion").value;
+      const autores = Number(row.querySelector(".autoresPublicacion").value) || 1;
+
+      let puntos = 0;
+
+      if (tipo === "libro") puntos = 3;
+      if (tipo === "articulo") puntos = 0.5;
+
+      if (autores > 1) puntos = puntos / autores;
+
+      total += puntos;
+    });
+
+    const original = total;
+    if (total > 10) total = 10;
+
+    puntuacion6El.textContent = total.toFixed(2).replace('.', ',');
+    mensaje6El.textContent =
+      total === 0 ? "Sin puntuación."
+      : original > 10 ? "Se aplica el máximo de 10 puntos."
+      : "Puntuación válida.";
+
+    actualizarPorcentajeMeritos();
+
+  };
+
+// ======================================================
+// APARTADO 7 — CONDECORACIONES (CORREGIDO SEGÚN DECRETO)
+// ======================================================
+
+const calcularBtn7 = document.getElementById("calcularBtn7");
+const resetBtn7 = document.getElementById("resetBtn7");
+const puntuacion7El = document.getElementById("puntuacion7");
+const mensaje7El = document.getElementById("mensaje7");
+
+calcularBtn7.onclick = () => {
+  let total = 0;
+
+  document.querySelectorAll("#baremoForm7 .inputA7").forEach(input => {
+    const cantidad = Number(input.value) || 0;
+    const puntosUnidad = Number(input.dataset.puntos) || 0;
+    const maxSub = input.dataset.max ? Number(input.dataset.max) : null;
+
+    let subtotal = cantidad * puntosUnidad;
+
+    // Límite por subapartado (solo felicitaciones)
+    if (maxSub !== null && subtotal > maxSub) {
+      subtotal = maxSub;
+    }
+
+    total += subtotal;
+  });
+
+  const original = total;
+  if (total > 10) total = 10;
+
+  puntuacion7El.textContent = total.toFixed(2).replace('.', ',');
+
+  mensaje7El.textContent =
+    total === 0 ? "Sin puntuación."
+    : original > 10 ? "Se aplica el máximo de 10 puntos."
+    : "Puntuación válida.";
+
+  actualizarResumenGlobal();
+  actualizarPorcentajeMeritos();
+
+  actualizarPorcentajeMeritos();
+
+};
+
+resetBtn7.onclick = () => {
+  document.querySelectorAll("#baremoForm7 .inputA7").forEach(input => input.value = "");
+  puntuacion7El.textContent = "0";
+  mensaje7El.textContent = "Aún no se ha calculado la puntuación.";
+  actualizarPorcentajeMeritos();
+
+};
+
+// ======================================================
+// RESUMEN GLOBAL — FUNCIÓN UNIVERSAL Y CORREGIDA
+// ======================================================
+
+// Convierte "1,5" → 1.5
+function parseValor(txt) {
+  if (!txt) return 0;
+  return Number(txt.replace(',', '.')) || 0;
+}
+
+function actualizarResumenGlobal() {
+
+  // Leer puntuaciones de cada apartado
+  const valores = {
+    p1: parseValor(document.getElementById("puntuacion1")?.textContent),
+    p2: parseValor(document.getElementById("puntuacion2")?.textContent),
+    p3: parseValor(document.getElementById("puntuacion3")?.textContent),
+    p4: parseValor(document.getElementById("puntuacion4")?.textContent),
+    p5: parseValor(document.getElementById("puntuacion5")?.textContent),
+    p6: parseValor(document.getElementById("puntuacion6")?.textContent),
+    p7: parseValor(document.getElementById("puntuacion7")?.textContent)
+  };
+
+  // Formateador
+  const fmt = n => n.toLocaleString("es-ES", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 10
+  });
+
+  // Actualizar cuadro-resumen apartado por apartado
+  document.getElementById("resumen1").textContent = fmt(valores.p1);
+  document.getElementById("resumen2").textContent = fmt(valores.p2);
+  document.getElementById("resumen3").textContent = fmt(valores.p3);
+  document.getElementById("resumen4").textContent = fmt(valores.p4);
+  document.getElementById("resumen5").textContent = fmt(valores.p5);
+  document.getElementById("resumen6").textContent = fmt(valores.p6);
+  document.getElementById("resumen7").textContent = fmt(valores.p7);
+
+  // Total general
+  const total = valores.p1 + valores.p2 + valores.p3 + valores.p4 + valores.p5 + valores.p6 + valores.p7;
+
+  // Actualizar total del cuadro
+  document.getElementById("resumenTotal").textContent = fmt(total);
+
+  // Texto explicativo
+  const resumenDetalleEl = document.getElementById("resumenDetalle");
+  if (resumenDetalleEl) {
+    resumenDetalleEl.textContent = `Puntuación total actual: ${fmt(total)} puntos.`;
+  }
+
+  // Actualizar total para el resumen firmado
+  const resumenFirmadoEl = document.getElementById("resumenTotalFirmado");
+  if (resumenFirmadoEl) {
+    resumenFirmadoEl.textContent = fmt(total);
+  }
+
+  // NUEVO: actualizar porcentaje
+  actualizarPorcentajeMeritos();
+}
+
+
+// ======================================================
+// PORTADA, RESUMEN FIRMADO, VISTA PREVIA E IMPRESIÓN
+// ======================================================
+
+function rellenarPortadaYResumen() {
+  const nombre = prompt("Introduce tu nombre completo para la portada:", "") || "";
+  const cuerpo = prompt("Introduce el cuerpo (p.ej. Policía Local de Andalucía):", "") || "";
+  const escala = prompt("Introduce la escala / categoría:", "") || "";
+
+  const hoy = new Date();
+  const fechaStr = hoy.toLocaleDateString("es-ES");
+
+  const portadaNombre = document.getElementById("portadaNombre");
+  const portadaCuerpo = document.getElementById("portadaCuerpo");
+  const portadaEscala = document.getElementById("portadaEscala");
+  const portadaFecha = document.getElementById("portadaFecha");
+
+  if (portadaNombre) portadaNombre.textContent = nombre;
+  if (portadaCuerpo) portadaCuerpo.textContent = cuerpo;
+  if (portadaEscala) portadaEscala.textContent = escala;
+  if (portadaFecha) portadaFecha.textContent = fechaStr;
+
+  const totalTexto = document.getElementById("resumenTotal")?.textContent || "0";
+  const resumenFirmadoEl = document.getElementById("resumenTotalFirmado");
+  if (resumenFirmadoEl) {
+    resumenFirmadoEl.textContent = totalTexto.replace(',', '.');
+  }
+}
+
+const btnVistaPrevia = document.getElementById("btnVistaPrevia");
+const btnImprimir = document.getElementById("btnImprimir");
+
+if (btnVistaPrevia) {
+  btnVistaPrevia.onclick = () => {
+    actualizarResumenGlobal();
+    rellenarPortadaYResumen();
+    document.documentElement.classList.toggle("preview-print");
+  };
+}
+
+if (btnImprimir) {
+  btnImprimir.onclick = () => {
+    actualizarResumenGlobal();
+    rellenarPortadaYResumen();
+    window.print();
+  };
+}
+
+// ======================================================
+// FUNCIÓN PARA CALCULAR EL PORCENTAJE
+// ======================================================
+
+function actualizarPorcentajeMeritos() {
+  const totalEl = document.getElementById("resumenTotal");
+  if (!totalEl) return;
+
+  const total = parseFloat(totalEl.textContent.replace(",", ".")) || 0;
+
+  // 120 puntos equivalen al 45% del total del concurso-oposición
+  const porcentaje = (total / 120) * 45;
+
+  const porcentajeEls = document.querySelectorAll(".porcentajeMeritos");
+  porcentajeEls.forEach(el => {
+    el.textContent = porcentaje.toFixed(2) + "%";
+  });
+}
+
+</script>
+<div class="text-center text-slate-500 text-xs mt-10">
+
+  <p class="mb-2">Aplicación desarrollada por <strong>Francisco Javier Guerrero Navarro</strong>.</p>
+
+  <!-- Bloque de iconos Creative Commons -->
+  <div class="flex justify-center items-center gap-3 mb-3 text-slate-500">
+
+    <!-- CC -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 26 26" fill="currentColor">
+      <path d="M13 0C5.82 0 0 5.82 0 13s5.82 13 13 13 13-5.82 13-13S20.18 0 13 0zm0 24C6.38 24 2 19.62 2 13S6.38 2 13 2s11 4.38 11 11-4.38 11-11 11z"/>
+      <path d="M13 5.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5zm0 13c-3.03 0-5.5-2.47-5.5-5.5S9.97 7.5 13 7.5s5.5 2.47 5.5 5.5-2.47 5.5-5.5 5.5z"/>
+      <circle cx="9.5" cy="12.5" r="1.5"/>
+      <circle cx="16.5" cy="12.5" r="1.5"/>
+    </svg>
+
+    <!-- BY -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 26 26" fill="currentColor">
+      <path d="M13 0C5.82 0 0 5.82 0 13s5.82 13 13 13 13-5.82 13-13S20.18 0 13 0zm0 24C6.38 24 2 19.62 2 13S6.38 2 13 2s11 4.38 11 11-4.38 11-11 11z"/>
+      <path d="M13 6c-3.86 0-7 3.14-7 7s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 10h-2v-2h2v2zm0-4h-2V8h2v4z"/>
+    </svg>
+
+    <!-- NC (No Comercial) -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 26 26" fill="currentColor">
+      <path d="M13 0C5.82 0 0 5.82 0 13s5.82 13 13 13 13-5.82 13-13S20.18 0 13 0zm0 24C6.38 24 2 19.62 2 13S6.38 2 13 2s11 4.38 11 11-4.38 11-11 11z"/>
+      <path d="M8 10h10v2H8zm0 4h10v2H8z"/>
+    </svg>
+
+    <!-- SA (Share Alike) -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 26 26" fill="currentColor">
+      <path d="M13 0C5.82 0 0 5.82 0 13s5.82 13 13 13 13-5.82 13-13S20.18 0 13 0zm0 24C6.38 24 2 19.62 2 13S6.38 2 13 2s11 4.38 11 11-4.38 11-11 11z"/>
+      <path d="M8 10h10v2H8zm0 4h10v2H8z"/>
+      <path d="M10 8l3-3 3 3H10zm0 10h6l-3 3-3-3z"/>
+    </svg>
+
+  </div>
+
+  <!-- Texto de licencias -->
+  <p class="leading-tight">
+    Licencias aplicadas:
+  </p>
+
+  <p class="mt-1">
+    <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" class="underline">
+      CC BY 4.0 — Reconocimiento
+    </a>
+  </p>
+
+  <p>
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" class="underline">
+      CC BY‑NC 4.0 — No Comercial
+    </a>
+  </p>
+
+  <p>
+    <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" class="underline">
+      CC BY‑SA 4.0 — Compartir Igual
+    </a>
+  </p>
+
+</div>
+
+
+</body>
+</html>
